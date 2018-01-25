@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <title>Multi&#45;Inventory Prototype Web App</title>
+
+        <!-- update the version number as needed -->
+        <script defer src="/__/firebase/4.2.0/firebase-app.js"></script>
+        <!-- include only the Firebase features as you need -->
+        <script defer src="/__/firebase/4.2.0/firebase-auth.js"></script>
+        <script defer src="/__/firebase/4.2.0/firebase-database.js"></script>
+        <script defer src="/__/firebase/4.2.0/firebase-messaging.js"></script>
+        <script defer src="/__/firebase/4.2.0/firebase-storage.js"></script>
+        <!-- initialize the SDK after all desired features are loaded -->
+        <script defer src="/__/firebase/init.js"></script>
+        
+        <!-- update the version number as needed -->
+        <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyC_UlxgL6oC5RXmT0jugoLn0KQaI1D0CQU",
+                authDomain: "multi-invent.firebaseapp.com",
+                databaseURL: "https://multi-invent.firebaseio.com",
+                projectId: "multi-invent",
+                storageBucket: "multi-invent.appspot.com",
+                messagingSenderId: "794417041321"
+            };
+            firebase.initializeApp(config);
+        </script>
+        
+        <script type="text/javascript">
+            function sendPasswordReset() {
+                var email = document.getElementById('emailReset').value;
+                
+                firebase.auth().sendPasswordResetEmail(email).then(function() {
+                    // Password Reset email sent
+                    alert('Password Reset Email Sent!');
+                }).catch(function(error) {
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    
+                    if(errorCode == 'auth/invalid-email') {
+                        alert(errorMessage);
+                    }
+                    else if (errorCode == 'auth/user-not-found') {
+                        alert(errorMessage);
+                    }
+                    console.log(error);
+                });
+            }
+            
+            function initApp() {
+                document.getElementById('btnReset').addEventListener('click', sendPasswordReset, false);
+                document.getElementById('emailReset').addEventListener('keyup', function (e) {
+                    e.preventDefault();
+                    if(e.keyCode === 13) {
+                        document.getElementById("btnReset").click();
+                    }
+                });
+            }
+            
+            window.onload = function() {
+                initApp();
+            };
+        </script>
+    </head>
+    <body class="bodycontainer">
+        <div class="bodycontainer">
+            <div id="forget" class="container front">
+                <h2>Forgot Password</h2>
+                <label>Insert your email</label>
+                <input id="emailReset" type="email" placeholder="Email">
+                <input type="submit" id="btnReset" class="btn btn-action" value="Reset Password">
+                <a id="forgetBtn" href="index.html">Back to Login</a>
+            </div>
+        </div>
+    </body>
+</html>

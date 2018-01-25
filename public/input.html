@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+        
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <title>Multi&#45;Inventory Prototype Web App</title>
+        
+        <!-- Bootstrap -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- update the version number as needed -->
+        <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyC_UlxgL6oC5RXmT0jugoLn0KQaI1D0CQU",
+                authDomain: "multi-invent.firebaseapp.com",
+                databaseURL: "https://multi-invent.firebaseio.com",
+                projectId: "multi-invent",
+                storageBucket: "multi-invent.appspot.com",
+                messagingSenderId: "794417041321"
+            };
+            firebase.initializeApp(config);
+            var database = firebase.database();
+        </script>
+        
+        <!-- Function code here -->
+        <script type="text/javascript">
+            function handleInputData() {
+                var dataBrand = document.getElementById('brand').value;
+                var dataName = document.getElementById('dataName').value;
+                var dataCode = document.getElementById('dataCode').value;
+                var dataAmount = parseInt(document.getElementById('dataAmount').value,10);
+                var dataLocation = document.getElementById('dataLocation').value;
+                
+                firebase.auth().onAuthStateChanged(function(user) {
+                    var userRef = database.ref('users/' + user.uid).child('name');
+                    var userName = userRef.once("value").then(function(snapshot) {
+                        inputData(dataBrand, dataName, dataCode, dataAmount, snapshot.val(), dataLocation);
+                    });                    
+                    alert('Input Success.');
+                    window.location.reload();
+                    return;
+                });
+            }
+            
+            function inputData(dataBrand, dataName, dataCode, amount, userName, dataLocation) {
+                var dataRef = database.ref('data/' + dataCode);
+                var input = {
+                    data_brand: dataBrand,
+                    data_name: dataName,
+                    amount: amount,
+                    input_by: userName,
+                    location: dataLocation,
+                    amountIn: amount,
+                    amountOut: 0
+                };
+                console.log(input);
+                dataRef.set(input);
+            }
+            
+            function readUser(userId) {
+                var userRef = firebase.database().ref('users/' + userId);
+                var nameRef = userRef.child('name');
+                nameRef.once("value").then(function(snapshot) {
+                    console.log(snapshot.val());
+                    document.getElementById('username').innerHTML = snapshot.val();
+                });
+            }
+            
+            function initApp() {
+                document.getElementById('inputBtn').addEventListener('click', handleInputData, false);
+                
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                        readUser(user.uid);
+                        var userRef = database.ref('users/' + user.uid).child('role');
+                        userRef.once('value', function(snapshot) {
+                            console.log(snapshot.val());
+                            
+                            if(snapshot.val() == 'user') {                                
+                                //document.getElementsByClassName('userRole').remove();
+                                var elements = document.getElementsByClassName('userRole');
+                                while(elements.length > 0) {
+                                    elements[0].parentNode.removeChild(elements[0]);
+                                }
+                            }
+                        });
+                        return;
+                    }
+                    else {
+                        window.location = 'index.html';
+                        alert('Error, you must log in first.');
+                    }
+                });
+            }
+            
+            window.onload = function() {
+                initApp();
+            };            
+        </script>
+    </head>
+    <body>
+        <!-- Navbar Menu -->
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <h4><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></h4>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#toggleNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="toggleNavbar">
+                    <ul class="nav navbar-nav">
+                        <!--<li style="color: #fff;"><a href="#"><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></a></li>-->
+                        <li><a href="home.html"><span><i class="glyphicon glyphicon-home"></i></span> Home</a></li>
+                        <li class="active"><a href="input.html"><span><i class="glyphicon glyphicon-import"></i></span> Input New Data</a></li>
+                        <li><a href="update.html"><span><i class="glyphicon glyphicon-floppy-save"></i></span> Update Stock</a></li>
+                        <li class="userRole"><a href="view.html"><span><i class="glyphicon glyphicon-folder-open"></i></span>  View Data</a></li>
+                        <li class="userRole"><a href="edit.html"><span><i class="glyphicon glyphicon-edit"></i></span> Edit Data</a></li>
+                        <li class="userRole"><a href="delete.html"><span><i class="glyphicon glyphicon-floppy-remove"></i></span> Delete Data</a></li>
+
+                         <!--For dropdown menu -->
+                        <li class="dropdown userRole">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span><i class="glyphicon glyphicon-cog"></i></span> Manage Accounts <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="manage.html">View Accounts</a></li>
+                                <li><a href="change_role.html">Manage User's Role</a></li>
+                            </ul>
+                        </li>
+                        <li id="btnLogout"><a href="index.html"><span><i class="glyphicon glyphicon-log-out"></i></span> Log out</a></li>                      
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- End of navbar -->
+        
+        <div id="input" class="body">
+            <h1>Input New Data</h1>
+            <label>Brand</label>
+            <input autofocus="autofocus" type="text" id="brand" autocomplete="off" placeholder="For exp: Honda, Yamaha, ...">
+            <label>No.</label>
+            <input type="text" id="dataCode" autocomplete="off">
+            <label>Name</label>
+            <input type="text" id="dataName" autocomplete="off">
+            <label>Quantity</label>
+            <input type="number" id="dataAmount" autocomplete="off">
+            <label>Location</label>
+            <input type="text" id="dataLocation" autocomplete="off">
+            <input type="submit" role="button" id="inputBtn" class="btn btn-action" value="Submit" target="_self">
+        </div>
+    </body>
+</html>

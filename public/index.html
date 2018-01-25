@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+        
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <title>Multi&#45;Inventory Prototype Web App</title>
+        
+        <!-- Bootstrap -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- update the version number as needed -->
+        <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyC_UlxgL6oC5RXmT0jugoLn0KQaI1D0CQU",
+                authDomain: "multi-invent.firebaseapp.com",
+                databaseURL: "https://multi-invent.firebaseio.com",
+                projectId: "multi-invent",
+                storageBucket: "multi-invent.appspot.com",
+                messagingSenderId: "794417041321"
+            };
+            firebase.initializeApp(config);
+        </script>
+    </head>
+    <body class="bodycontainer">
+        <div class="bodycontainer">
+            <div class="header">
+                <h1>Multi-Inventory Web Application</h1>
+            </div>
+            <div id ="index" class="container container-fluid front">
+                <div id="login" class="container">
+                    <h2>Login</h2>
+                    <input type="email" id="txtEmail" placeholder="Email">
+                    <input type="password" id="txtPassword" placeholder="Password">
+                    <input type="submit" role="button" id="btnLogin" class="btn btn-action" value="Log In">
+                    <p>Don't have an account? <a id="registerBtn" href="register.html">Register here</a></p>
+                    <a id="forgetBtn" href="forget.html">Forgot password?</a>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">         
+            /* --- LOGIN FUNCTION --- */
+            function toggleSignIn() {
+                if(firebase.auth().currentUser) {
+                    // [START signout]
+                    firebase.auth().signOut();
+                    // [END signout]
+                } else {
+                    var email = document.getElementById('txtEmail').value;
+                    var password = document.getElementById('txtPassword').value;
+                    if (email.length < 4) {
+                        alert('Please enter a valid email address.');
+                        return;
+                    }
+                    if (password.length < 4) {
+                        alert('Please enter a password.');
+                        return;
+                    }
+                    
+                    // Sign in with email and password.
+                    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+                       // Handle errors here.
+                        var errorCode = error.code;
+                        var errorMessage = error.message;
+                        
+                        if (errorCode === 'auth/wrong-password') {
+                            alert('Wrong password.');
+                        } else {
+                            alert(errorMessage);
+                        }
+                        console.log(error);
+                    });
+                    
+                    firebase.auth().onAuthStateChanged(function(user) {
+                        /* if user has already logged in or signed in, automaticaly redirect to home */
+                        if (user) {
+                            window.location = 'home.html';
+                            console.log("test");
+                        } 
+                    });
+                }
+            }
+            
+            function initApp() {                
+                /* add event after click submit button */
+                document.getElementById('btnLogin').addEventListener('click', toggleSignIn, false);
+                document.getElementById('txtPassword').addEventListener('keyup', function (e) {
+                    e.preventDefault();
+                    if(e.keyCode === 13) {
+                        document.getElementById("btnLogin").click();
+                    }
+                });
+            }
+            
+            /* to automatically load initApp() function */
+            window.onload = function() {
+                initApp();
+            };
+        </script>
+    </body>
+</html>

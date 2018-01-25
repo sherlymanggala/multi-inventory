@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+        
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <title>Multi&#45;Inventory Prototype Web App</title>
+        
+        <!-- Bootstrap -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+        <!-- update the version number as needed -->
+        <script src="https://www.gstatic.com/firebasejs/4.8.1/firebase.js"></script>
+        <script>
+            // Initialize Firebase
+            var config = {
+                apiKey: "AIzaSyC_UlxgL6oC5RXmT0jugoLn0KQaI1D0CQU",
+                authDomain: "multi-invent.firebaseapp.com",
+                databaseURL: "https://multi-invent.firebaseio.com",
+                projectId: "multi-invent",
+                storageBucket: "multi-invent.appspot.com",
+                messagingSenderId: "794417041321"
+            };
+            firebase.initializeApp(config);
+            var database = firebase.database();
+        </script>
+        
+        <!-- Function code here -->
+        <script type="text/javascript">            
+            function handleSearchUser() {
+                var searchInput = document.getElementById('searchData').value;
+                
+                var dbRef = database.ref('users');
+                
+                var dataRef = dbRef.orderByChild('email').equalTo(searchInput).once('value', function(snapshot) {
+                    console.log(snapshot.val());
+                    snapshot.forEach(function(data) {                            
+                        var email = data.child('email').val();
+                        var name = data.child('name').val();
+                        var role = data.child('role').val();
+                        //console.log(number);
+
+                        //console.log(data);
+                        printData(email, name, role);
+                    });
+                });
+            }
+            
+            function updateRole() {
+                var option = document.getElementById('option').value;
+                var dbRef = database.ref('users');
+                var searchInput = document.getElementById('searchData').value;
+                var dataRef = dbRef.orderByChild('email').equalTo(searchInput).once('value', function(snapshot) {
+                    console.log(snapshot.val());
+                    snapshot.forEach(function(data) {
+                        var role;
+                        if (option == "user") {
+                            role = "user";
+                        }
+                        else {
+                            role = "admin";
+                        }
+                        console.log(data);
+                        data.ref.update({
+                            role: role
+                        });
+                        alert("Update Success.");
+                    });
+                });
+            }
+            
+            function printData(email, name, role) {
+                document.getElementById('resultEmail').innerHTML = email;
+                document.getElementById('resultName').innerHTML = name;
+                document.getElementById('resultRole').innerHTML = role;
+            }
+            
+            function readUser(userId) {
+                var userRef = firebase.database().ref('users/' + userId);
+                var nameRef = userRef.child('name');
+                nameRef.once("value").then(function(snapshot) {
+                    console.log(snapshot.val());
+                    document.getElementById('username').innerHTML = snapshot.val();
+                });
+            }
+            
+            function initApp() {
+                firebase.auth().onAuthStateChanged(function(user) {
+                    if (user) {
+                        readUser(user.uid);
+                        var userRef = database.ref('users/' + user.uid).child('role');
+                        userRef.once('value', function(snapshot) {
+                            console.log(snapshot.val());
+                            
+                            if(snapshot.val() == 'user') {                                
+                                window.location = 'home.html';
+                                alert('Error, you don\'t have access to this page.');
+                            }
+                        });
+                        return;
+                    }
+                    else {
+                        window.location = 'index.html';
+                        alert('Error, you must log in first.');
+                    }
+                });
+                document.getElementById('searchBtn').addEventListener('click', handleSearchUser, false);
+                document.getElementById('updateBtn').addEventListener('click', updateRole, false);
+            }
+            
+            window.onload = function() {
+                initApp();
+            };            
+        </script>
+    </head>
+    <body>
+        <!-- Navbar Menu -->
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <h4><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></h4>
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#toggleNavbar">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                </div>
+                <div class="collapse navbar-collapse" id="toggleNavbar">
+                    <ul class="nav navbar-nav">
+                        <!--<li style="color: #fff;"><a href="#"><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></a></li>-->
+                        <li><a href="home.html"><span><i class="glyphicon glyphicon-home"></i></span> Home</a></li>
+                        <li><a href="input.html"><span><i class="glyphicon glyphicon-import"></i></span> Input New Data</a></li>
+                        <li><a href="update.html"><span><i class="glyphicon glyphicon-floppy-save"></i></span> Update Stock</a></li>
+                        <li class="userRole"><a href="view.html"><span><i class="glyphicon glyphicon-folder-open"></i></span>  View Data</a></li>
+                        <li class="userRole"><a href="edit.html"><span><i class="glyphicon glyphicon-edit"></i></span> Edit Data</a></li>
+                        <li class="userRole"><a href="delete.html"><span><i class="glyphicon glyphicon-floppy-remove"></i></span> Delete Data</a></li>                        
+
+                         <!--For dropdown menu -->
+                        <li class="dropdown userRole active">
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#"><span><i class="glyphicon glyphicon-cog"></i></span> Manage Accounts <span class="caret"></span></a>
+                            <ul class="dropdown-menu">
+                                <li><a href="manage.html">View Accounts</a></li>
+                                <li class="active"><a href="change_role.html">Manage User's Role</a></li>
+                            </ul>
+                        </li>
+                        <li id="btnLogout"><a href="index.html"><span><i class="glyphicon glyphicon-log-out"></i></span> Log out</a></li>                      
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- End of navbar -->
+        
+        <div id="input" class="body">
+            <h1>Change User's Role</h1>
+            <div id="searchContainer" class="container-fluid">
+                <div id="search" class="container-fluid">
+                    <input type="text" id="searchData" placeholder="Input user's email" class="form-control">
+                    <button type="submit" role="button" id="searchBtn" class="btn btn-action"><span class="glyphicon glyphicon-search"></span></button>
+                </div>
+                <div id="tableResult" class="container-fluid">
+                    <table class="table">
+                        <tr class="table">
+                            <th class="col-md-4">Email</th>
+                            <th class="col-md-4">Name</th>
+                            <th class="col-md-4">Role</th>
+                            <!--<th class="col-md-1">Qty</th>-->
+                        </tr>
+                        <tr>
+                            <td class="col-md-4" id="resultEmail"></td>
+                            <td class="col-md-4" id="resultName"></td>
+                            <td class="col-md-4" id="resultRole"></td>
+                        </tr>
+                    </table>
+                </div>
+                <div id="change">
+                    <label>Update Role to:</label>
+                    <select id="option">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <input type="submit" role="button" id="updateBtn" class="btn btn-action" value="Update">
+            </div>
+        </div>
+    </body>
+</html>
