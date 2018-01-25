@@ -53,7 +53,7 @@
                 var dbRef = firebase.database().ref('data');
                 var totalItems = 0;
                 
-                dbRef.once('value', function(snapshot) {
+                dbRef.on('value', function(snapshot) {
                     /*console.log(snapshot.val());*/
                     snapshot.forEach(function(data) {
                         var amount = parseInt(data.child('amount').val(), 10);
@@ -62,13 +62,23 @@
                         document.getElementById('numbTotalItems').innerHTML = totalItems;
                     });
                 });
+                
+//                dbRef.on('child_changed', function(snapshot) {
+//                    /*console.log(snapshot.val());*/
+//                    snapshot.forEach(function(data) {
+//                        var amount = parseInt(data.child('amount').val(), 10);
+//                        /*console.log(amount);*/
+//                        totalItems+=amount;
+//                        document.getElementById('numbTotalItems').innerHTML = totalItems;
+//                    });
+//                });
             }
             
             function getItemsIn() {
                 var dbRef = firebase.database().ref('data');
                 var itemsIn = 0;
                 
-                dbRef.once('value', function(snapshot) {
+                dbRef.on('value', function(snapshot) {
                     /*console.log(snapshot.val());*/
                     snapshot.forEach(function(data) {
                         var amount = parseInt(data.child('amountIn').val(), 10);
@@ -77,13 +87,23 @@
                         document.getElementById('numbItemsIn').innerHTML = itemsIn;
                     });
                 });
+                
+//                dbRef.on('child_changed', function(snapshot) {
+//                    /*console.log(snapshot.val());*/
+//                    snapshot.forEach(function(data) {
+//                        var amount = parseInt(data.child('amountIn').val(), 10);
+//                        /*console.log(amount);*/
+//                        itemsIn+=amount;
+//                        document.getElementById('numbItemsIn').innerHTML = itemsIn;
+//                    });
+//                });
             }
             
             function getItemsOut() {
                 var dbRef = firebase.database().ref('data');
                 var itemsOut = 0;
                 
-                dbRef.once('value', function(snapshot) {
+                dbRef.on('value', function(snapshot) {
                     /*console.log(snapshot.val());*/
                     snapshot.forEach(function(data) {
                         var amount = parseInt(data.child('amountOut').val(), 10);
@@ -92,6 +112,16 @@
                         document.getElementById('numbItemsOut').innerHTML = itemsOut;
                     });
                 });
+                
+//                dbRef.on('child_changed', function(snapshot) {
+//                    /*console.log(snapshot.val());*/
+//                    snapshot.forEach(function(data) {
+//                        var amount = parseInt(data.child('amountOut').val(), 10);
+//                        /*console.log(amount);*/
+//                        itemsOut+=amount;
+//                        document.getElementById('numbItemsOut').innerHTML = itemsOut;
+//                    });
+//                });
             }
             
             function sortStockInLow() {
@@ -101,35 +131,37 @@
                     //console.log(snapshot.val());
                     snapshot.forEach(function(data) {
                         var box = document.getElementsByClassName('stockTable')[0];
-                        var a = parseInt(1,10);
-                        
-                        var number = data.key;
-                        var name = data.child('data_name').val();
-                        var amount = data.child('amount').val();
-
                         var tr = document.createElement('tr');
-                        tr.id = ("tr" + a);
-
-                        var td1 = document.createElement('td');
-                        td1.innerHTML = number;
-                        tr.appendChild(td1);
-
-                        var td2 = document.createElement('td');
-                        td2.innerHTML = name;
-                        tr.appendChild(td2);
-
-                        var td3 = document.createElement('td');
-                        td3.innerHTML = amount;
-                        tr.appendChild(td3);
+                        
+                        //data number
+                        var number = document.createElement('td');
+                        number.innerHTML = data.key;
+                        tr.id = data.key;
+                        
+                        //data name
+                        var name = document.createElement('td');
+                        name.innerHTML = data.child('data_name').val();
+                        
+                        //data quantity
+                        var quantity = document.createElement('td');
+                        quantity.innerHTML = data.child('amount').val();
+                        
+                        tr.appendChild(number);
+                        tr.appendChild(name);
+                        tr.appendChild(quantity);
                         
                         box.appendChild(tr);
-                        
-                        if (amount <= 5) {
-                            document.getElementById("tr" + a).style.color = "red";
-                        }
-                        
-                        a++;
+
+                        //console.log(tr);
                     });
+                    //console.log(snapshot.val());
+                });
+                
+                //updated row if child has changes
+                dbRef.on('child_changed', function(snapshot) {
+                    //onChangedChild(snapshot.val());
+                    //console.log(snapshot.key);
+                    document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td></tr>";
                 });
             }
             
@@ -137,36 +169,40 @@
                 var dbRef = firebase.database().ref('data');
                 
                 dbRef.orderByChild('amountIn').limitToLast(5).on('value', function(snapshot) {
-                    console.log(snapshot.val());
+                    //console.log(snapshot.val());
                     snapshot.forEach(function(data) {
                         var box = document.getElementsByClassName('itemInTable')[0];
-                        var a = parseInt(1,10);
-                        
-                        var number = data.key;
-                        var name = data.child('data_name').val();
-                        var amount = data.child('amountIn').val();
-
                         var tr = document.createElement('tr');
-                        tr.id = ("tr" + a);
-
-                        var td1 = document.createElement('td');
-                        td1.innerHTML = number;
-                        tr.appendChild(td1);
-
-                        var td2 = document.createElement('td');
-                        td2.innerHTML = name;
-                        tr.appendChild(td2);
-
-                        var td3 = document.createElement('td');
-                        td3.innerHTML = amount;
-                        tr.appendChild(td3);
+                        
+                        //data number
+                        var number = document.createElement('td');
+                        number.innerHTML = data.key;
+                        tr.id = data.key;
+                        
+                        //data name
+                        var name = document.createElement('td');
+                        name.innerHTML = data.child('data_name').val();
+                        
+                        //data quantity
+                        var quantity = document.createElement('td');
+                        quantity.innerHTML = data.child('amount').val();
+                        
+                        tr.appendChild(number);
+                        tr.appendChild(name);
+                        tr.appendChild(quantity);
                         
                         box.appendChild(tr);
-                        
-                        document.getElementById("tr" + a).style.marginLeft = "5px";
-                        
-                        a++;
+
+                        //console.log(tr);
                     });
+                    //console.log(snapshot.val());
+                });
+                
+                //updated row if child has changes
+                dbRef.on('child_changed', function(snapshot) {
+                    //onChangedChild(snapshot.val());
+                    //console.log(snapshot.key);
+                    document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td></tr>";
                 });
             }
             
@@ -177,33 +213,37 @@
                     console.log(snapshot.val());
                     snapshot.forEach(function(data) {
                         var box = document.getElementsByClassName('itemOutTable')[0];
-                        var a = parseInt(1,10);
-                        
-                        var number = data.key;
-                        var name = data.child('data_name').val();
-                        var amount = data.child('amountOut').val();
-
                         var tr = document.createElement('tr');
-                        tr.id = ("tr" + a);
-
-                        var td1 = document.createElement('td');
-                        td1.innerHTML = number;
-                        tr.appendChild(td1);
-
-                        var td2 = document.createElement('td');
-                        td2.innerHTML = name;
-                        tr.appendChild(td2);
-
-                        var td3 = document.createElement('td');
-                        td3.innerHTML = amount;
-                        tr.appendChild(td3);
+                        
+                        //data number
+                        var number = document.createElement('td');
+                        number.innerHTML = data.key;
+                        tr.id = data.key;
+                        
+                        //data name
+                        var name = document.createElement('td');
+                        name.innerHTML = data.child('data_name').val();
+                        
+                        //data quantity
+                        var quantity = document.createElement('td');
+                        quantity.innerHTML = data.child('amount').val();
+                        
+                        tr.appendChild(number);
+                        tr.appendChild(name);
+                        tr.appendChild(quantity);
                         
                         box.appendChild(tr);
-                        
-                        document.getElementById("tr" + a).style.marginLeft = "5px";
-                        
-                        a++;
+
+                        //console.log(tr);
                     });
+                    //console.log(snapshot.val());
+                });
+                
+                //updated row if child has changes
+                dbRef.on('child_changed', function(snapshot) {
+                    //onChangedChild(snapshot.val());
+                    //console.log(snapshot.key);
+                    document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td></tr>";
                 });
             }
             

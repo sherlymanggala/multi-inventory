@@ -37,7 +37,8 @@
                         console.log('click');
                     });
                 });
-            function handleOutputData() {
+            
+            /*function handleOutputData() {
                 var db = database.ref('data');
                 var a = parseInt(1,10);
                 var box = document.getElementsByClassName('tableData')[0];
@@ -172,21 +173,21 @@
                 td5.innerHTML = location;
                 tr.appendChild(td5);
                 
-                /*var editBtn = document.createElement('button');
-                editBtn.className = 'glyphicon glyphicon-edit';                
-                tr.appendChild(editBtn);
-                
-                var delBtn = document.createElement('button');
-                delBtn.className = 'glyphicon glyphicon-remove-sign';                
-                tr.appendChild(delBtn);*/
-                
-                /*var editBtn = document.createElement('td');
-                editBtn.innerHTML = "<button id='editBtn' class='glyphicon glyphicon-edit'></button>";
-                tr.appendChild(editBtn);
-                
-                var delBtn = document.createElement('td');
-                delBtn.innerHTML = "<button id='delBtn' class='glyphicon glyphicon-remove-sign'></button>";
-                tr.appendChild(delBtn);*/
+//                var editBtn = document.createElement('button');
+//                editBtn.className = 'glyphicon glyphicon-edit';                
+//                tr.appendChild(editBtn);
+//                
+//                var delBtn = document.createElement('button');
+//                delBtn.className = 'glyphicon glyphicon-remove-sign';                
+//                tr.appendChild(delBtn);
+//                
+//                var editBtn = document.createElement('td');
+//                editBtn.innerHTML = "<button id='editBtn' class='glyphicon glyphicon-edit'></button>";
+//                tr.appendChild(editBtn);
+//                
+//                var delBtn = document.createElement('td');
+//                delBtn.innerHTML = "<button id='delBtn' class='glyphicon glyphicon-remove-sign'></button>";
+//                tr.appendChild(delBtn);
 
                 box.appendChild(tr);
                 a++;   
@@ -261,27 +262,229 @@
                     }
                 }
                 
-                /*var input, filter, ul, li, a, i;
-                input = document.getElementById('searchData');
-                filter = input.value.toUpperCase();
-                ul = document.getElementById('myUL');
-                li = ul.getElementsByTagName('li');
-                for(i=0;i<li.length;i++) {
-                    a = li[i].getElementsByTagName('a')[0];
-                    if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                        li[i].style.display = '';
+//                var input, filter, ul, li, a, i;
+//                input = document.getElementById('searchData');
+//                filter = input.value.toUpperCase();
+//                ul = document.getElementById('myUL');
+//                li = ul.getElementsByTagName('li');
+//                for(i=0;i<li.length;i++) {
+//                    a = li[i].getElementsByTagName('a')[0];
+//                    if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+//                        li[i].style.display = '';
+//                    }
+//                    else {
+//                        li[i].style.display = "none";
+//                    }
+//                }
+            }*/
+            
+            function handleOutputData() {
+                var db = database.ref('data');
+                var i = parseInt(0,10), j = parseInt(0,10), x = [], y = [];
+                var box = document.getElementsByClassName('tableData')[0];
+                db.on('value', function(snapshot) {
+                    snapshot.forEach(function(data) {
+                        //Create table row
+                        var tr = document.createElement('tr');
+                        tr.className = 'data';
+                        
+                        //data brand
+                        var brand = document.createElement('td');
+                        brand.innerHTML = data.child('data_brand').val();
+                        
+                        //data number
+                        var number = document.createElement('td');
+                        number.innerHTML = data.key;
+                        tr.id = data.key;
+                        
+                        //data name
+                        var name = document.createElement('td');
+                        name.innerHTML = data.child('data_name').val();
+                        
+                        //data quantity
+                        var quantity = document.createElement('td');
+                        quantity.innerHTML = data.child('amount').val();
+                        
+                        //data location
+                        var location = document.createElement('td');
+                        location.innerHTML = data.child('location').val();
+
+                        tr.appendChild(brand);
+                        tr.appendChild(number);
+                        tr.appendChild(name);
+                        tr.appendChild(quantity);
+                        tr.appendChild(location);
+                        
+                        box.appendChild(tr);
+
+                        //console.log(tr);
+                    });
+                    //console.log(snapshot.val());
+                });
+                
+                //updated row if child has changes
+                db.on('child_changed', function(snapshot) {
+                    //onChangedChild(snapshot.val());
+                    //console.log(snapshot.key);
+                    document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                });
+                //console.log(snapshot.val());
+            }
+            
+//            function handleSearchData() {
+//                clearData();
+//                var searchType = document.getElementById('selectType').value;
+//                var searchInput = document.getElementById('searchData').value;
+//                
+//                var dbRef = database.ref('data');
+//                
+//                if (searchType == "dataNumber") {
+//                    var ref = database.ref('data/'+searchInput);
+//                    
+//                    ref.on('value', function(snapshot) {
+//                        var data = snapshot.val();
+//                        
+//                        var brand = data["data_brand"];
+//                        var number = snapshot.key;
+//                        var name = data["data_name"];
+//                        var amount = data["amount"];
+//                        var location = data["location"];
+//                        
+//                        //printData(brand, number, name, amount, location);
+//                    });
+//                }
+//                else if (searchType == "dataName") {
+//                    var dataRef = dbRef.orderByChild('data_name').equalTo(searchInput).on('value', function(snapshot) {
+//                        console.log(snapshot.val());
+//                        snapshot.forEach(function(data) {                            
+//                            var brand = data.child('data_brand').val();
+//                            var number = data.key;
+//                            var name = data.child('data_name').val();
+//                            var amount = data.child('amount').val();
+//                            var location = data.child('location').val();
+//                            //console.log(number);
+//                            
+//                            console.log(data);
+//                            //printData(brand, number, name, amount, location);
+//                        });
+//                    });
+//                }
+//                else if (searchType == "dataBrand") {
+//                    var dataRef = dbRef.orderByChild('data_brand').equalTo(searchInput).on('value', function(snapshot) {
+//                        console.log(snapshot.val());
+//                        snapshot.forEach(function(data) {                            
+//                            var brand = data.child('data_brand').val();
+//                            var number = data.key;
+//                            var name = data.child('data_name').val();
+//                            var amount = data.child('amount').val();
+//                            var location = data.child('location').val();
+//                            //console.log(number);
+//                            
+//                            console.log(data);
+//                            //printData(brand, number, name, amount, location);
+//                        });
+//                    });
+//                }
+//                else if (searchType == "dataLocation") {
+//                    var dataRef = dbRef.orderByChild('location').equalTo(searchInput).on('value', function(snapshot) {
+//                        console.log(snapshot.val());
+//                        snapshot.forEach(function(data) {                            
+//                            var brand = data.child('data_brand').val();
+//                            var number = data.key;
+//                            var name = data.child('data_name').val();
+//                            var amount = data.child('amount').val();
+//                            var location = data.child('location').val();
+//                            //console.log(number);
+//                            
+//                            console.log(data);
+//                            //printData(brand, number, name, amount, location);
+//                        });
+//                    });
+//                }
+//            }
+            
+//            function clearData() {
+//                var elements = document.getElementsByClassName('data');
+//                while(elements.length > 0) {
+//                    elements[0].parentNode.removeChild(elements[0]);
+//                }
+//            }
+            
+            function searchData() {
+                var searchType = document.getElementById('selectType').value;
+                if(searchType == 'dataBrand') {
+                    var input, filter, tr, td, i;
+                    var a = parseInt(1,10);
+                    input = document.getElementById('searchData');
+                    filter = input.value.toUpperCase();
+                    tr = document.getElementsByClassName('data');
+                    for(i = 0 ;i<tr.length;i++) {
+                        console.log('somethinggggg');
+                        td = tr[i].getElementsByTagName('td')[0];
+                        if(td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        }
+                        else {
+                            tr[i].style.display = "none";
+                        }
                     }
-                    else {
-                        li[i].style.display = "none";
+                }
+                else if(searchType == 'dataNumber') {
+                    var input, filter, tr, td, i;
+                    var a = parseInt(1,10);
+                    input = document.getElementById('searchData');
+                    filter = input.value.toUpperCase();
+                    tr = document.getElementsByClassName('data');
+                    for(i = 0 ;i<tr.length;i++) {
+                        td = tr[i].getElementsByTagName('td')[1];
+                        if(td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        }
+                        else {
+                            tr[i].style.display = "none";
+                        }
                     }
-                }*/
+                }
+                else if(searchType == 'dataName') {
+                    var input, filter, tr, td, i;
+                    var a = parseInt(1,10);
+                    input = document.getElementById('searchData');
+                    filter = input.value.toUpperCase();
+                    tr = document.getElementsByClassName('data');
+                    for(i = 0 ;i<tr.length;i++) {
+                        td = tr[i].getElementsByTagName('td')[2];
+                        if(td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        }
+                        else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
+                
+                else if(searchType == 'dataLocation') {
+                    var input, filter, tr, td, i;
+                    var a = parseInt(1,10);
+                    input = document.getElementById('searchData');
+                    filter = input.value.toUpperCase();
+                    tr = document.getElementsByClassName('data');
+                    for(i = 0 ;i<tr.length;i++) {
+                        td = tr[i].getElementsByTagName('td')[4];
+                        if(td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                        }
+                        else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+                }
             }
             
             function readUser(userId) {
                 var userRef = firebase.database().ref('users/' + userId);
                 var nameRef = userRef.child('name');
                 nameRef.once("value").then(function(snapshot) {
-                    console.log(snapshot.val());
+                    //console.log(snapshot.val());
                     document.getElementById('username').innerHTML = snapshot.val();
                 });
             }
@@ -292,7 +495,7 @@
                         readUser(user.uid);
                         var userRef = database.ref('users/' + user.uid).child('role');
                         userRef.once('value', function(snapshot) {
-                            console.log(snapshot.val());
+                            //console.log(snapshot.val());
                             
                             if(snapshot.val() == 'user') {                                
                                 window.location = 'home.html';
@@ -308,7 +511,7 @@
                 });
                 
                 handleOutputData();
-                document.getElementById('searchBtn').addEventListener('click', handleSearchData, false);
+                document.getElementById('searchBtn').addEventListener('click', handleOutputData, false);
             }
             
             

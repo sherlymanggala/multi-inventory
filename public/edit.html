@@ -82,7 +82,7 @@
                 var brand = document.getElementById('dataBrand').value;
                 var name = document.getElementById('dataName').value;
                 var no = document.getElementById('dataCode').value;
-                var amount = document.getElementById('dataAmount').value;
+                var amount = parseInt(document.getElementById('dataAmount').value, 10);
                 var location = document.getElementById('dataLocation').value;
 
                 var dbRef = database.ref('data');
