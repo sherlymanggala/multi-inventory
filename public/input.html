@@ -42,10 +42,31 @@
                     var userRef = database.ref('users/' + user.uid).child('name');
                     var userName = userRef.once("value").then(function(snapshot) {
                         inputData(dataBrand, dataName, dataCode, dataAmount, snapshot.val(), dataLocation);
+                        //checkDataExists(dataCode);
                     });                    
                     alert('Input Success.');
                     window.location.reload();
                     return;
+                });
+            }
+            
+            function checkDataExists() {
+                var db = database.ref('data');
+                var dataCode = document.getElementById('dataCode').value;
+                db.on('value', function(snapshot) {
+                    if(snapshot.hasChild(dataCode)) {
+                        console.log("exist");
+                        //console.log(snapshot.val());
+                        console.log(dataCode);
+                        alert('Data exists!');
+                    }
+                    else {
+                        console.log("not exist");
+                        //console.log(snapshot.val());
+                        console.log(dataCode);
+                        handleInputData()
+                    }
+                    //console.log(snapshot.hasChild(dataCode));
                 });
             }
             
@@ -74,7 +95,7 @@
             }
             
             function initApp() {
-                document.getElementById('inputBtn').addEventListener('click', handleInputData, false);
+                document.getElementById('inputBtn').addEventListener('click', checkDataExists, false);
                 
                 firebase.auth().onAuthStateChanged(function(user) {
                     if (user) {

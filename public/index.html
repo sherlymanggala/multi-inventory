@@ -50,6 +50,13 @@
                 if(firebase.auth().currentUser) {
                     // [START signout]
                     firebase.auth().signOut();
+                    /*firebase.auth().onAuthStateChanged(function(user) {
+                         if user has already logged in or signed in, automaticaly redirect to home 
+                        if (user) {
+                            window.location = 'home.html';
+                            console.log("test");
+                        } 
+                    });*/
                     // [END signout]
                 } else {
                     var email = document.getElementById('txtEmail').value;
