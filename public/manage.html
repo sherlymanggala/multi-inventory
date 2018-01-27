@@ -31,6 +31,338 @@
         
         <!-- Function code here -->
         <script type="text/javascript">
+            var db = firebase.database().ref('users');
+            $(document).ready(function() {
+                $('.glyphicon-triangle-top').hide();
+                $('.glyphicon-triangle-bottom').hide();
+                var clicks = 0;
+                var box = document.getElementsByClassName('tableData')[0];
+                $('#nameHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#nameIncrement').show(); //ascending symbol shown off
+                        $('#nameDecrement').hide(); //descending symbol hidden
+                        
+                        //hide other symbol
+                        $('#emailIncrement').hide();
+                        $('#emailDecrement').hide();
+                        $('#roleIncrement').hide();
+                        $('#roleDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('name').once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+                                tr.id = data.key;
+                                
+                                //data email
+                                var email = document.createElement('td');
+                                email.innerHTML = data.child('email').val();
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('name').val();
+                                
+                                //data role
+                                var role = document.createElement('td');
+                                role.innerHTML = data.child('role').val();
+
+                                tr.appendChild(email);
+                                tr.appendChild(name);
+                                tr.appendChild(role);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('users/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('email').val() + "</td><td>" + snapshot.child('name').val() + "</td><td>" + snapshot.child('role').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').show();
+                        
+                        //hide other symbol
+                        $('#emailIncrement').hide();
+                        $('#emailDecrement').hide();
+                        $('#roleIncrement').hide();
+                        $('#roleDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+                                tr.id = data.key;
+                                
+                                //data email
+                                var email = document.createElement('td');
+                                email.innerHTML = data.child('email').val();
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('name').val();
+                                
+                                //data role
+                                var role = document.createElement('td');
+                                role.innerHTML = data.child('role').val();
+
+                                tr.appendChild(email);
+                                tr.appendChild(name);
+                                tr.appendChild(role);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('email').val() + "</td><td>" + snapshot.child('name').val() + "</td><td>" + snapshot.child('role').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                });
+                $('#emailHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#emailIncrement').show(); //ascending symbol shown off
+                        $('#emailDecrement').hide(); //descending symbol hidden
+                        
+                        //hide other symbol
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#roleIncrement').hide();
+                        $('#roleDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('email').once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+                                tr.id = data.key;
+                                
+                                //data email
+                                var email = document.createElement('td');
+                                email.innerHTML = data.child('email').val();
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('name').val();
+                                
+                                //data role
+                                var role = document.createElement('td');
+                                role.innerHTML = data.child('role').val();
+
+                                tr.appendChild(email);
+                                tr.appendChild(name);
+                                tr.appendChild(role);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('users/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('email').val() + "</td><td>" + snapshot.child('name').val() + "</td><td>" + snapshot.child('role').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        $('#emailIncrement').hide();
+                        $('#emailDecrement').show();
+                        
+                        //hide other symbol
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#roleIncrement').hide();
+                        $('#roleDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+                                tr.id = data.key;
+                                
+                                //data email
+                                var email = document.createElement('td');
+                                email.innerHTML = data.child('email').val();
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('name').val();
+                                
+                                //data role
+                                var role = document.createElement('td');
+                                role.innerHTML = data.child('role').val();
+
+                                tr.appendChild(email);
+                                tr.appendChild(name);
+                                tr.appendChild(role);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('email').val() + "</td><td>" + snapshot.child('name').val() + "</td><td>" + snapshot.child('role').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                });
+                $('#roleHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#roleIncrement').show();
+                        $('#roleDecrement').hide();
+                        
+                        //hide other symbol
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#emailIncrement').hide();
+                        $('#emailDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('role').once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+                                tr.id = data.key;
+                                
+                                //data email
+                                var email = document.createElement('td');
+                                email.innerHTML = data.child('email').val();
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('name').val();
+                                
+                                //data role
+                                var role = document.createElement('td');
+                                role.innerHTML = data.child('role').val();
+
+                                tr.appendChild(email);
+                                tr.appendChild(name);
+                                tr.appendChild(role);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('users/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('email').val() + "</td><td>" + snapshot.child('name').val() + "</td><td>" + snapshot.child('role').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        $('#roleIncrement').hide();
+                        $('#roleDecrement').show();
+                        
+                        //hide other symbol
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#emailIncrement').hide();
+                        $('#emailDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+                                tr.id = data.key;
+                                
+                                //data email
+                                var email = document.createElement('td');
+                                email.innerHTML = data.child('email').val();
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('name').val();
+                                
+                                //data role
+                                var role = document.createElement('td');
+                                role.innerHTML = data.child('role').val();
+
+                                tr.appendChild(email);
+                                tr.appendChild(name);
+                                tr.appendChild(role);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('email').val() + "</td><td>" + snapshot.child('name').val() + "</td><td>" + snapshot.child('role').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                });
+            });
+            
+            function clearData() {
+                var elements = document.getElementsByClassName('data');
+                while(elements.length > 0) {
+                    elements[0].parentNode.removeChild(elements[0]);
+                }
+            }
             
             //Display all users
             function handleOutputUsers() {
@@ -67,8 +399,6 @@
                 
                 //updated row if child has changes
                 db.on('child_changed', function(snapshot) {
-                    //onChangedChild(snapshot.val());
-                    //console.log(snapshot.key);
                     document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('email').val() + "</td><td>" + snapshot.child('name').val() + "</td><td>" + snapshot.child('role').val() + "</td></tr>";
                 });
                 //console.log(snapshot.val());
@@ -220,9 +550,9 @@
             <div>
                 <table class="table tableData">
                     <tr>
-                        <th class="col-md-4">Email</th>
-                        <th class="col-md-4">Name</th>
-                        <th class="col-md-4">Role</th>
+                        <th class="col-md-4" id="emailHeader">Email <span class="glyphicon glyphicon-triangle-top" id="emailIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="emailDecrement"></span></th>
+                        <th class="col-md-4" id="nameHeader">Name <span class="glyphicon glyphicon-triangle-top" id="nameIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="nameDecrement"></span></th>
+                        <th class="col-md-4" id="roleHeader">Role <span class="glyphicon glyphicon-triangle-top" id="roleIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="roleDecrement"></span></th>
                     </tr>
                 </table>
             </div>

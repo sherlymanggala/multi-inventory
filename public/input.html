@@ -64,7 +64,7 @@
                         console.log("not exist");
                         //console.log(snapshot.val());
                         console.log(dataCode);
-                        handleInputData()
+                        handleInputData();
                     }
                     //console.log(snapshot.hasChild(dataCode));
                 });
@@ -79,7 +79,8 @@
                     input_by: userName,
                     location: dataLocation,
                     amountIn: amount,
-                    amountOut: 0
+                    amountOut: 0,
+                    sort_value: 0
                 };
                 console.log(input);
                 dataRef.set(input);

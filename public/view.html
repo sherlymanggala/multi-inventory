@@ -31,12 +31,704 @@
         
         <!-- Function code here -->
         <script type="text/javascript">
+            var db = firebase.database().ref('data');
             $(document).ready(function() {
-                    $('table tr').click(function() {
-                        //alert($(this).text());
-                        console.log('click');
-                    });
+                $('.glyphicon-triangle-top').hide();
+                $('.glyphicon-triangle-bottom').hide();
+                var clicks = 0;
+                var box = document.getElementsByClassName('tableData')[0];
+                $('#brandHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#brandIncrement').show(); //ascending symbol shown off
+                        $('#brandDecrement').hide(); //descending symbol hidden
+                        
+                        //hide other symbol
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('data_brand').once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('data/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        //$('#brandHeader').append($('<span class="glyphicon glyphicon-triangle-bottom"></span>'));
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').show();
+                        
+                         //hide other symbol
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
                 });
+                $('#numberHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#numberIncrement').show(); //ascending symbol shown off
+                        $('#numberDecrement').hide(); //descending symbol hidden
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByKey().once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('data/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').show();
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                });
+                $('#nameHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#nameIncrement').show(); //ascending symbol shown off
+                        $('#nameDecrement').hide(); //descending symbol hidden
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('data_name').once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('data/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').show();
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                });
+                $('#qtyHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#qtyIncrement').show(); //ascending symbol shown off
+                        $('#qtyDecrement').hide(); //descending symbol hidden
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('amount').once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('data/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').show();
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#locIncrement').hide();
+                        $('#locDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                });
+                $('#locHeader').click(function() {
+                    clicks++;
+                    if (clicks%2 == 1) {
+                        $('#locIncrement').show(); //ascending symbol shown off
+                        $('#locDecrement').hide(); //descending symbol hidden
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('location').once('value', function(snapshot) {
+                            var a = 99999;
+                            snapshot.forEach(function(data) {
+                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                                
+                                var ref = database.ref('data/' + data.key);
+                                
+                                a--;
+                                
+                                ref.once('value', function(snap) {
+                                    ref.child('sort_value').set(a);
+                                });
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                    else {
+                        $('#locIncrement').hide();
+                        $('#locDecrement').show();
+                        
+                        //hide other symbol
+                        $('#brandIncrement').hide();
+                        $('#brandDecrement').hide();
+                        $('#numberIncrement').hide();
+                        $('#numberDecrement').hide();
+                        $('#nameIncrement').hide();
+                        $('#nameDecrement').hide();
+                        $('#qtyIncrement').hide();
+                        $('#qtyDecrement').hide();
+                        //console.log('brand header clicked');
+                        
+                        //remove previous display first
+                        clearData();
+                        
+                        //print sorted table
+                        db.orderByChild('sort_value').once('value', function(snapshot) {
+                            snapshot.forEach(function(data) {                                
+                                //Create table row
+                                var tr = document.createElement('tr');
+                                tr.className = 'data';
+
+                                //data brand
+                                var brand = document.createElement('td');
+                                brand.innerHTML = data.child('data_brand').val();
+
+                                //data number
+                                var number = document.createElement('td');
+                                number.innerHTML = data.key;
+                                tr.id = data.key;
+
+                                //data name
+                                var name = document.createElement('td');
+                                name.innerHTML = data.child('data_name').val();
+
+                                //data quantity
+                                var quantity = document.createElement('td');
+                                quantity.innerHTML = data.child('amount').val();
+
+                                //data location
+                                var location = document.createElement('td');
+                                location.innerHTML = data.child('location').val();
+
+                                tr.appendChild(brand);
+                                tr.appendChild(number);
+                                tr.appendChild(name);
+                                tr.appendChild(quantity);
+                                tr.appendChild(location);
+
+                                box.appendChild(tr);
+                            });
+                        });
+                        
+                        db.on('child_changed', function(snapshot) {
+                            //onChangedChild(snapshot.val());
+                            //console.log(snapshot.key);
+                            document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                        });
+                        //console.log('brand header clicked');
+                    }
+                });
+            });
             
             //Display all data
             function handleOutputData() {
@@ -90,6 +782,13 @@
                     document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
                 });
                 //console.log(snapshot.val());
+            }
+            
+            function clearData() {
+                var elements = document.getElementsByClassName('data');
+                while(elements.length > 0) {
+                    elements[0].parentNode.removeChild(elements[0]);
+                }
             }
             
             //Guided Search
@@ -197,8 +896,6 @@
                 document.getElementById('searchBtn').addEventListener('click', handleOutputData, false);
             }
             
-            
-            
             window.onload = function() {
                 initApp();
             };
@@ -258,11 +955,11 @@
             <div>
                 <table class="table tableData">
                     <tr>
-                        <th class="col-md-2">Brand</th>
-                        <th class="col-md-3">No.</th>
-                        <th class="col-md-4">Name</th>
-                        <th class="col-md-1">Qty</th>
-                        <th class="col-md-2">Location</th>
+                        <th class="col-md-2" id="brandHeader">Brand <span class="glyphicon glyphicon-triangle-top" id="brandIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="brandDecrement"></span></th>
+                        <th class="col-md-3" id="numberHeader">No. <span class="glyphicon glyphicon-triangle-top" id="numberIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="numberDecrement"></span></th>
+                        <th class="col-md-4" id="nameHeader">Name <span class="glyphicon glyphicon-triangle-top" id="nameIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="nameDecrement"></span></th>
+                        <th class="col-md-1" id="qtyHeader">Qty <span class="glyphicon glyphicon-triangle-top" id="qtyIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="qtyDecrement"></span></th>
+                        <th class="col-md-2" id="locHeader">Location <span class="glyphicon glyphicon-triangle-top" id="locIncrement"></span><span class="glyphicon glyphicon-triangle-bottom" id="locDecrement"></span></th>
                     </tr>
                 </table>
             </div>
