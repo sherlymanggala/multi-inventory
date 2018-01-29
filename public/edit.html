@@ -123,9 +123,15 @@
             function readUser(userId) {
                 var userRef = firebase.database().ref('users/' + userId);
                 var nameRef = userRef.child('name');
+                var imageRef = userRef.child('image');
                 nameRef.once("value").then(function(snapshot) {
                     console.log(snapshot.val());
                     document.getElementById('username').innerHTML = snapshot.val();
+                });
+                
+                imageRef.once("value").then(function(snapshot) {
+                    console.log(snapshot.val());
+                    document.getElementById('userImage').innerHTML = "<img src='" + snapshot.val() + "' alt='user' width='60' style='border-radius: 50px; display: block; margin-left: auto; margin-right: auto; margin-top: 15px'>";
                 });
             }
             
@@ -173,7 +179,8 @@
         <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <h4><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></h4>
+                    <span id="userImage"></span>
+                    <h4><span id="username"></span></h4>
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#toggleNavbar">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>

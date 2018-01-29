@@ -780,7 +780,50 @@
                     //onChangedChild(snapshot.val());
                     //console.log(snapshot.key);
                     document.getElementById(snapshot.key).innerHTML = "<tr id=" + snapshot.key + "><td>" + snapshot.child('data_brand').val() + "</td><td>" + snapshot.key + "</td><td>" + snapshot.child('data_name').val() + "</td><td>" + snapshot.child('amount').val() + "</td><td>" + snapshot.child('location').val() + "</td></tr>";
+                    document.getElementById(snapshot.key).style.backgroundColor = "#42f4f4";
+                    setTimeout(function() {
+                        document.getElementById(snapshot.key).style.backgroundColor = "";
+                    }, 1500);
                 });
+                
+                /*db.on('child_added', function(snapshot) {
+                    //Create table row
+                    var tr = document.createElement('tr');
+                    tr.className = 'data';
+
+                    //data brand
+                    var brand = document.createElement('td');
+                    brand.innerHTML = snapshot.child('data_brand').val();
+
+                    //data number
+                    var number = document.createElement('td');
+                    number.innerHTML = snapshot.key;
+                    tr.id = snapshot.key;
+
+                    //data name
+                    var name = document.createElement('td');
+                    name.innerHTML = snapshot.child('data_name').val();
+
+                    //data quantity
+                    var quantity = document.createElement('td');
+                    quantity.innerHTML = snapshot.child('amount').val();
+
+                    //data location
+                    var location = document.createElement('td');
+                    location.innerHTML = snapshot.child('location').val();
+
+                    tr.appendChild(brand);
+                    tr.appendChild(number);
+                    tr.appendChild(name);
+                    tr.appendChild(quantity);
+                    tr.appendChild(location);
+
+                    box.appendChild(tr);
+                    document.getElementById(snapshot.key).style.backgroundColor = "#42f4f4";
+                    setTimeout(function() {
+                        document.getElementById(snapshot.key).style.backgroundColor = "";
+                    }, 1500);
+                });*/
                 //console.log(snapshot.val());
             }
             
@@ -865,9 +908,15 @@
             function readUser(userId) {
                 var userRef = firebase.database().ref('users/' + userId);
                 var nameRef = userRef.child('name');
+                var imageRef = userRef.child('image');
                 nameRef.once("value").then(function(snapshot) {
                     //console.log(snapshot.val());
                     document.getElementById('username').innerHTML = snapshot.val();
+                });
+                
+                imageRef.once("value").then(function(snapshot) {
+                    console.log(snapshot.val());
+                    document.getElementById('userImage').innerHTML = "<img src='" + snapshot.val() + "' alt='user' width='60' style='border-radius: 50px; display: block; margin-left: auto; margin-right: auto; margin-top: 15px'>";
                 });
             }
             
@@ -906,7 +955,8 @@
         <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <h4><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></h4>
+                    <span id="userImage"></span>
+                    <h4><span id="username"></span></h4>
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#toggleNavbar">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>

@@ -32,12 +32,24 @@
         <!-- Function code here -->
         <script type="text/javascript">
             function handleSearchData() {
-                var searchType = document.getElementById('selectType').value;
+                //var searchType = document.getElementById('selectType').value;
                 var searchInput = document.getElementById('searchData').value;
                 
                 var dbRef = database.ref('data');
                 
-                if (searchType == "dataNumber") {
+                var ref = database.ref('data/'+searchInput);
+                ref.on('value', function(snapshot) {
+                    var data = snapshot.val();
+
+                    var brand = data["data_brand"];
+                    var number = snapshot.key;
+                    var name = data["data_name"];
+                    var amount = data["amount"];
+
+                    printData(brand, number, name, amount);
+                });
+                
+                /*if (searchType == "dataNumber") {
                     var ref = database.ref('data/'+searchInput);
                     ref.on('value', function(snapshot) {
                         var data = snapshot.val();
@@ -63,16 +75,25 @@
                             printData(brand, number, name, amount);
                         });
                     });
-                }
+                }*/
             }
             
             function handleDeleteData() {
-                var searchType = document.getElementById('selectType').value;
+                //var searchType = document.getElementById('selectType').value;
                 var searchInput = document.getElementById('searchData').value;
                 
                 var ref = database.ref('data/'+searchInput);
                 
-                if (searchType == "dataNumber") {
+                ref.once('value', function(snapshot) {
+                    var r = confirm("Are you sure?");
+                    if (r) {
+                        ref.remove();
+                        alert('Delete data success.');
+                        window.location.reload();
+                    }
+                });
+                
+                /*if (searchType == "dataNumber") {
                     ref.once('value', function(snapshot) {
                         var r = confirm("Are you sure?");
                         if (r) {
@@ -91,10 +112,10 @@
                             window.location.reload();
                         }
                     });
-                }
+                }*/
             }
             
-            function printData(brand, number, name, amount, location) {
+            function printData(brand, number, name, amount) {
                 document.getElementById('resultBrand').innerHTML = brand;
                 document.getElementById('resultNumber').innerHTML = number;
                 document.getElementById('resultName').innerHTML = name;
@@ -104,9 +125,15 @@
             function readUser(userId) {
                 var userRef = firebase.database().ref('users/' + userId);
                 var nameRef = userRef.child('name');
+                var imageRef = userRef.child('image');
                 nameRef.once("value").then(function(snapshot) {
                     console.log(snapshot.val());
                     document.getElementById('username').innerHTML = snapshot.val();
+                });
+                
+                imageRef.once("value").then(function(snapshot) {
+                    console.log(snapshot.val());
+                    document.getElementById('userImage').innerHTML = "<img src='" + snapshot.val() + "' alt='user' width='60' style='border-radius: 50px; display: block; margin-left: auto; margin-right: auto; margin-top: 15px'>";
                 });
             }
             
@@ -132,7 +159,12 @@
                 });
                 document.getElementById('searchBtn').addEventListener('click', handleSearchData, false);
                 document.getElementById('deleteBtn').addEventListener('click', handleDeleteData, false);
-                
+                document.getElementById('searchData').addEventListener('keyup', function (e) {
+                    e.preventDefault();
+                    if(e.keyCode === 13) {
+                        document.getElementById("searchBtn").click();
+                    }
+                });
             }
             
             window.onload = function() {
@@ -145,7 +177,8 @@
         <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <h4><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></h4>
+                    <span id="userImage"></span>
+                    <h4><span id="username"></span></h4>
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#toggleNavbar">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -180,10 +213,11 @@
         <div id="input" class="body">
             <h1>Delete Data</h1>
             <div id="searchContainer">
-                <select id="selectType">
+                <!--<select id="selectType">
                     <option value="dataNumber">Data No.</option>
                     <option value="dataName">Data Name</option>
-                </select>
+                </select>-->
+                <label>Input Data Number</label>
                 <div id="search" class="container-fluid">
                     <input type="text" id="searchData" placeholder="Search for..." class="form-control">
                     <button type="submit" role="button" id="searchBtn" class="btn btn-action"><span class="glyphicon glyphicon-search"></span></button>

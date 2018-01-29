@@ -32,12 +32,23 @@
         <!-- Function code here -->
         <script type="text/javascript">
             function handleSearchData() {
-                var searchType = document.getElementById('selectType').value;
+                //var searchType = document.getElementById('selectType').value;
                 var searchInput = document.getElementById('searchData').value.toUpperCase();
                 
                 var dbRef = database.ref('data');
+                var ref = database.ref('data/'+searchInput);
+                ref.on('value', function(snapshot) {
+                    var data = snapshot.val();
+
+                    var brand = data["data_brand"];
+                    var number = snapshot.key;
+                    var name = data["data_name"];
+                    var amount = data["amount"];
+
+                    printData(brand, number, name, amount);
+                });
                 
-                if (searchType == "dataNumber") {
+                /*if (searchType == "dataNumber") {
                     var ref = database.ref('data/'+searchInput);
                     ref.on('value', function(snapshot) {
                         var data = snapshot.val();
@@ -63,11 +74,11 @@
                             printData(brand, number, name, amount);
                         });
                     });
-                }
+                }*/
             }
             
             function calculateData() {
-                var searchType = document.getElementById('selectType').value;
+                //var searchType = document.getElementById('selectType').value;
                 var searchInput = document.getElementById('searchData').value;
                 var quantity = document.getElementById('dataQty').value;
                 var option = document.getElementById('option').value;
@@ -75,7 +86,44 @@
                 var dbRef = database.ref('data');
                 var ref = database.ref('data/'+searchInput);
                 
-                if (searchType == "dataNumber") {
+                ref.once('value', function(snapshot) {
+                    var data = snapshot.val();
+                    var amount = parseInt(data['amount'], 10);
+                    var amountIn = parseInt(data['amountIn'], 10);
+                    var amountOut = parseInt(data['amountOut'], 10);
+                    var value = parseInt(quantity, 10);
+
+                    if(option == "Increase") {
+                        amount+=value;
+                        amountIn+=value;
+                        snapshot.ref.update({
+                            amount: amount,
+                            amountIn: amountIn,
+                            amountOut: amountOut
+                        });
+                        alert('Update Success');
+                    }
+                    else {
+                        if (amount-value < 0) {
+                            alert('Stock cannot below than 0');
+                        }
+                        else {
+                            amount-=value;
+                            amountOut+=value;
+                            snapshot.ref.update({
+                                amount: amount,
+                                amountIn: amountIn,
+                                amountOut: amountOut
+                            });
+                            alert('Update Success');
+                        }
+                    }
+                    console.log(amount);                   
+                    
+                    window.location.reload();
+                });
+                
+                /*if (searchType == "dataNumber") {
                     ref.once('value', function(snapshot) {
                         var data = snapshot.val();
                         var amount = parseInt(data['amount'], 10);
@@ -88,8 +136,13 @@
                             amountIn+=value;
                         }
                         else {
-                            amount-=value;
-                            amountOut+=value;
+                            if (amount-value < 0) {
+                                alert('Stock cannot below than 0');
+                            }
+                            else {
+                                amount-=value;
+                                amountOut+=value;
+                            }
                         }
                         console.log(amount);
                         snapshot.ref.update({
@@ -115,26 +168,36 @@
                                 amount+=value;
                                 amountIn+=value;
                                 console.log(amount);
+                                data.ref.update({
+                                    amount: amount,
+                                    amountIn: amountIn,
+                                    amountOut: amountOut
+                                });
+                                alert('Update Success');
                             }
                             else {
-                                amount-=value;
-                                amountOut+=value;
-                                console.log(amount);
+                                if (amount-value < 0) {
+                                    alert('Stock cannot below than 0');
+                                }
+                                else {
+                                    amount-=value;
+                                    amountOut+=value;
+                                    data.ref.update({
+                                        amount: amount,
+                                        amountIn: amountIn,
+                                        amountOut: amountOut
+                                    });
+                                    alert('Update Success');
+                                }
                             }
                             console.log(amount);
-                            data.ref.update({
-                                amount: amount,
-                                amountIn: amountIn,
-                                amountOut: amountOut
-                            });
-                            alert('Update Success');
                             window.location.reload();
                         });
                     });
-                }
+                }*/
             }
             
-            function printData(brand, number, name, amount, location) {
+            function printData(brand, number, name, amount) {
                 document.getElementById('resultBrand').innerHTML = brand;
                 document.getElementById('resultNumber').innerHTML = number;
                 document.getElementById('resultName').innerHTML = name;
@@ -144,9 +207,15 @@
             function readUser(userId) {
                 var userRef = firebase.database().ref('users/' + userId);
                 var nameRef = userRef.child('name');
+                var imageRef = userRef.child('image');
                 nameRef.once("value").then(function(snapshot) {
                     console.log(snapshot.val());
                     document.getElementById('username').innerHTML = snapshot.val();
+                });
+                
+                imageRef.once("value").then(function(snapshot) {
+                    console.log(snapshot.val());
+                    document.getElementById('userImage').innerHTML = "<img src='" + snapshot.val() + "' alt='user' width='60' style='border-radius: 50px; display: block; margin-left: auto; margin-right: auto; margin-top: 15px'>";
                 });
             }
             
@@ -200,7 +269,8 @@
         <nav class="navbar navbar-inverse">
             <div class="container-fluid">
                 <div class="navbar-header">
-                    <h4><span><i class="glyphicon glyphicon-user"></i></span>&nbsp;<span id="username"></span></h4>
+                    <span id="userImage"></span>
+                    <h4><span id="username"></span></h4>
                     <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#toggleNavbar">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -235,13 +305,16 @@
         <div id="input" class="body">
             <h1>Update Stock</h1>
             <div id="searchContainer">
-                <select id="selectType">
+                <!-- <select id="selectType">
                     <option value="dataNumber">Data No.</option>
                     <option value="dataName">Data Name</option>
-                </select>
-                <div id="search" class="container-fluid">
-                    <input autofocus="autofocus" type="text" id="searchData" placeholder="Search for..." autocomplete="off" class="form-control">
-                    <button type="submit" role="button" id="searchBtn" class="btn btn-action"><span class="glyphicon glyphicon-search"></span></button>
+                </select> -->
+                <div id="searchBox">
+                    <label>Input Data Number</label>
+                        <div id="search" class="container-fluid">                    
+                            <input autofocus="autofocus" type="text" id="searchData" placeholder="Search for..." autocomplete="off" class="form-control">
+                            <button type="submit" role="button" id="searchBtn" class="btn btn-action"><span class="glyphicon glyphicon-search"></span></button>
+                        </div>
                 </div>
                 <div id="tableResult" class="container-fluid">
                     <table class="table">
